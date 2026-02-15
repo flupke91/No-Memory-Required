@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 文件路径: res/layout/activity_main.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="词库管理"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#333"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="正在检查..."
+        android:background="#E3F2FD"
+        android:padding="12dp"
+        android:textColor="#1565C0"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btn_replace"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="覆盖导入 (Replace)"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#2196F3"/>
+
+    <Button
+        android:id="@+id/btn_append"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="追加导入 (Append)"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#4CAF50"/>
+
+    <Button
+        android:id="@+id/btn_clear"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="清空词库 (Delete All)"
+        android:backgroundTint="#F44336"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="文件格式: 英文,中文,拼音\n例如: Apple,苹果,pingguo"
+        android:gravity="center"
+        android:layout_marginTop="32dp"
+        android:textColor="#999"/>
+
+</LinearLayout>

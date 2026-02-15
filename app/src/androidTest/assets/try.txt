@@ -1,0 +1,15 @@
+Android,安卓,anzhuo
+Apple,苹果,pingguo
+Browser,浏览器,liulanqi
+Computer,计算机,jisuanji
+Database,数据库,shujuku
+English,英语,yingyu
+Framework,框架,kuangjia
+Google,谷歌,guge
+Keyboard,键盘,jianpan
+Library,库,ku
+Memory,内存,neicun
+Network,网络,wangluo
+Project,项目,xiangmu
+Software,软件,ruanjian
+System,系统,xitong
