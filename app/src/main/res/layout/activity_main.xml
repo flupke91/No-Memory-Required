@@ -54,7 +54,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="文件格式: 英文,中文,拼音\n例如: Apple,苹果,pingguo"
+        android:text="文件格式: 中文,英文,拼音\n例如: 苹果,Apple,pingguo"
         android:gravity="center"
         android:layout_marginTop="32dp"
         android:textColor="#999"/>

@@ -64,12 +64,12 @@ public class MyInputMethodService extends InputMethodService implements Keyboard
             BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
             String line;
             while ((line = reader.readLine()) != null) {
-                // 格式: English,Chinese,Pinyin
+                // 格式: Chinese,English,Pinyin
                 String[] parts = line.split(",");
                 if (parts.length >= 3) {
                     customDictionary.add(new WordEntry(
-                            parts[0].trim(),
                             parts[1].trim(),
+                            parts[0].trim(),
                             parts[2].trim()
                     ));
                 }

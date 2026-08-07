@@ -33,7 +33,7 @@
   <text x="600" y="182" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#137552">应用私有存储</text>
   <rect x="482" y="242" width="236" height="84" rx="14" fill="#f3fcf8" stroke="#a9ddc7"/>
   <text x="600" y="274" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#205b47">user_dict.txt</text>
-  <text x="600" y="301" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="13" fill="#537a6b">每行：English,Chinese,Pinyin</text>
+  <text x="600" y="301" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="13" fill="#537a6b">每行：Chinese,English,Pinyin</text>
   <rect x="482" y="372" width="236" height="84" rx="14" fill="#f3fcf8" stroke="#a9ddc7"/>
   <text x="600" y="404" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="700" fill="#205b47">词库加载器</text>
   <text x="600" y="431" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="13" fill="#537a6b">启动加载 · 时间戳热刷新</text>
