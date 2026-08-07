@@ -1,120 +1,125 @@
 # No Memory Required
 
 <p align="center">
-  <strong>A tiny, offline-first Android IME powered by your own vocabulary.</strong>
+  <strong>一个由个人词库驱动、离线运行的轻量级 Android 输入法</strong>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white" alt="Android">
   <img src="https://img.shields.io/badge/language-Java-orange?style=flat-square&logo=openjdk&logoColor=white" alt="Java">
-  <img src="https://img.shields.io/badge/min%20SDK-24-blue?style=flat-square" alt="Min SDK 24">
+  <img src="https://img.shields.io/badge/min%20SDK-24-blue?style=flat-square" alt="最低 API 24">
 </p>
 
-## Why this project?
+<p align="center">
+  <a href="#项目简介">项目简介</a> ·
+  <a href="#核心能力">核心能力</a> ·
+  <a href="#架构图">架构图</a> ·
+  <a href="#快速开始">快速开始</a> ·
+  <a href="#词库格式">词库格式</a>
+</p>
 
-Most input methods try to become an entire language platform. **No Memory Required** takes the opposite approach: provide a small, understandable keyboard that turns a personal dictionary into an offline candidate bar.
+## 项目简介
 
-It is designed for developers, language learners, translators, and anyone who needs a deterministic vocabulary-driven input experience without a remote service, account, or cloud sync.
+**No Memory Required** 是一个基于 Android 原生输入法框架实现的个人词库输入法。
 
-> Import a vocabulary. Enable the keyboard. Type a prefix. Choose a candidate.
+它不依赖云端服务，也不内置复杂的预测模型，而是把一份简单、可编辑的词库加载到输入法服务中：用户输入英文或拼音前缀，输入法实时筛选对应的中文候选词，点击候选词即可上屏。
 
-## Highlights
+这个项目适合：
 
-- **Offline by design** — vocabulary is stored in the app's private storage and queried locally.
-- **Personal dictionary workflow** — replace, append, or clear dictionary entries from the companion activity.
-- **English + Pinyin lookup** — type an English or Pinyin prefix to surface the corresponding Chinese candidate.
-- **Fast refresh** — the input service checks the dictionary timestamp when a new input session starts and reloads changes automatically.
-- **Native Android implementation** — built on `InputMethodService`, `KeyboardView`, Android XML layouts, and the standard IME lifecycle.
-- **Small surface area** — intentionally simple code and data flow make the project easy to inspect, fork, and customize.
+- 需要使用专有名词、术语或个人短语的开发者；
+- 希望维护自己词库的语言学习者和翻译工作者；
+- 想研究 Android `InputMethodService` 的开发者；
+- 需要一个逻辑透明、行为可控的离线输入工具的用户。
 
-## Architecture
+> 导入词库 → 启用输入法 → 输入前缀 → 点击候选词。
 
-```mermaid
-flowchart LR
-    User([User]) --> Manager[MainActivity\nDictionary Manager]
-    Manager --> Picker[Android\nDocument Picker]
-    Picker --> Importer[Import pipeline\nvalidate CSV-like lines]
-    Importer --> Store[(user_dict.txt\napp-private storage)]
+## 核心能力
 
-    System[Android IME framework] --> Service[MyInputMethodService]
-    Store --> Loader[Dictionary loader\nload + timestamp check]
-    Loader --> Service
-    Service --> Keyboard[QWERTY KeyboardView]
-    Service --> Composer[Composing buffer]
-    Composer --> Matcher[Prefix matcher\nEnglish / Pinyin]
-    Matcher --> Candidates[Candidate bar\nChinese words]
-    Candidates --> Service
-    Service --> App[Target application]
-```
+- **完全离线**：词库保存在应用私有目录 `user_dict.txt`，候选匹配在本地完成。
+- **三种词库管理操作**：支持替换导入、追加导入和清空词库。
+- **英文 / 拼音双前缀匹配**：对 `English` 和 `Pinyin` 字段执行不区分大小写的 `startsWith` 匹配。
+- **候选栏交互**：匹配结果以可点击的中文候选词展示在键盘顶部。
+- **输入会话自动刷新**：开始新的输入会话时，如果词库文件的修改时间发生变化，服务会自动重新加载词库。
+- **原生实现**：使用 `InputMethodService`、`KeyboardView`、Android XML 布局和标准 `InputConnection` 完成输入链路。
 
-### Runtime flow
+## 架构图
 
-1. `MainActivity` opens Android's document picker and imports text entries.
-2. Valid lines are written to the app-private file `user_dict.txt`.
-3. `MyInputMethodService` loads the dictionary when the service starts.
-4. When a new input session begins, the service checks whether the file changed and reloads it if necessary.
-5. Letter key presses are kept in a composing buffer and sent to the target app as composing text.
-6. English/Pinyin prefix matches are rendered as clickable Chinese candidates.
-7. Selecting a candidate commits the Chinese text through the current `InputConnection`.
+架构图使用仓库内置 SVG，GitHub 页面可直接显示：
 
-## Getting started
+<p align="center">
+  <img src="./docs/architecture.svg" alt="No Memory Required 系统架构图" width="100%">
+</p>
 
-### Prerequisites
+### 一次输入的完整链路
 
-- Android Studio with Android SDK support
-- JDK 11
-- An Android device or emulator running Android 7.0 (API 24) or newer
+1. 用户在 `MainActivity` 中选择一个文本词库文件。
+2. Android 文档选择器将文件 URI 返回给应用。
+3. 应用逐行读取文件，并将包含逗号的行写入 `user_dict.txt`。
+4. `MyInputMethodService` 启动时加载词库；新的输入会话开始时检查文件修改时间。
+5. 用户按下字母键后，字符进入 composing buffer，并通过 `InputConnection` 发送到当前文本框。
+6. 服务使用英文字段和拼音字段进行前缀匹配，将中文字段生成候选项。
+7. 用户点击候选项后，中文文本通过 `commitText` 提交到当前应用。
 
-### Build and install
+## 快速开始
 
-Clone the repository and open it in Android Studio:
+### 环境要求
+
+- Android Studio；
+- JDK 11；
+- Android SDK；
+- Android 7.0（API 24）或更高版本的设备 / 模拟器。
+
+### 获取项目
 
 ```bash
 git clone https://github.com/flupke91/No-Memory-Required.git
 cd No-Memory-Required
 ```
 
-Build a debug APK from the command line:
+### 构建 Debug APK
+
+macOS / Linux：
 
 ```bash
 ./gradlew assembleDebug
 ```
 
-On Windows:
+Windows PowerShell：
 
 ```powershell
 .\gradlew.bat assembleDebug
 ```
 
-The generated APK is located at:
+生成的 APK 位于：
 
 ```text
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-You can also run the `app` configuration directly from Android Studio.
+也可以直接使用 Android Studio 打开项目并运行 `app` 配置。
 
-## Enable the keyboard
+## 启用输入法
 
-After installing the app:
+安装 APK 后：
 
-1. Open **No Memory Required** and import a dictionary file.
-2. Open Android **Settings → System → Languages & input → On-screen keyboard**.
-3. Enable **No Memory Required**.
-4. Open any text field and switch to the new keyboard from the input-method picker.
-5. Type an English or Pinyin prefix and tap a candidate in the suggestion bar.
+1. 打开 **No Memory Required** 应用。
+2. 先导入一份词库文件。
+3. 打开系统设置中的 **系统 → 语言和输入法 → 屏幕键盘**。
+4. 启用 **No Memory Required**。
+5. 在任意文本输入框中，通过系统输入法切换按钮切换到本输入法。
+6. 输入英文或拼音前缀，点击候选栏中的中文词条。
 
-The exact settings labels can vary between Android versions and device manufacturers.
+不同 Android 版本和手机厂商的设置名称可能略有差异。
 
-## Dictionary format
+## 词库格式
 
-Use one entry per line with three comma-separated fields:
+每行一个词条，使用三个英文逗号分隔字段：
 
 ```text
 English,Chinese,Pinyin
 ```
 
-Example:
+示例：
 
 ```text
 milestone,里程碑,lichengbei
@@ -123,76 +128,109 @@ blueprint,蓝图,lantu
 astronaut,宇航员,yuhangyuan
 ```
 
-The importer keeps lines containing a comma. The input service uses entries with at least three fields and performs a case-insensitive prefix match against the English and Pinyin columns.
+字段含义：
 
-### Import modes
+| 字段 | 作用 | 示例 |
+| --- | --- | --- |
+| `English` | 英文关键词，支持前缀匹配 | `milestone` |
+| `Chinese` | 点击候选后实际提交的中文文本 | `里程碑` |
+| `Pinyin` | 拼音关键词，支持前缀匹配 | `lichengbei` |
 
-| Mode | Behavior |
+### 导入模式
+
+| 操作 | 实际行为 |
 | --- | --- |
-| **Replace** | Replaces the current `user_dict.txt` with the selected file's valid lines. |
-| **Append** | Adds the selected file's valid lines to the existing dictionary. |
-| **Clear** | Deletes the stored dictionary and returns to the empty/default state. |
+| **替换导入** | 使用选中文件中的有效行覆盖现有 `user_dict.txt`。 |
+| **追加导入** | 将选中文件中的有效行追加到现有词库末尾。 |
+| **清空词库** | 删除应用私有目录中的 `user_dict.txt`。 |
 
-## Project structure
+> 当前实现只会保留包含逗号的行；输入法解析时要求至少有三个逗号分隔字段。词条中的逗号暂不支持转义。
+
+## 项目结构
 
 ```text
 .
 ├── app/
 │   └── src/main/
 │       ├── java/com/example/myinputmethodservice/
-│       │   ├── MainActivity.java              # Dictionary management UI
-│       │   └── MyInputMethodService.java      # IME service and candidate logic
+│       │   ├── MainActivity.java              # 词库管理页面、文件导入与清空
+│       │   └── MyInputMethodService.java      # 输入法服务、键盘与候选词逻辑
 │       ├── res/layout/
-│       │   ├── activity_main.xml               # Import and status screen
-│       │   └── input_method.xml                # Candidate bar + keyboard shell
+│       │   ├── activity_main.xml               # 词库管理界面
+│       │   └── input_method.xml                # 候选栏与键盘容器
 │       ├── res/xml/
-│       │   ├── method.xml                      # IME metadata
-│       │   └── qwerty.xml                      # Keyboard definition
-│       └── AndroidManifest.xml                 # Activity and IME service
+│       │   ├── method.xml                      # 输入法服务元数据
+│       │   └── qwerty.xml                      # QWERTY 键盘定义
+│       └── AndroidManifest.xml                 # Activity 与输入法 Service 声明
+├── docs/
+│   └── architecture.svg                        # 项目架构图
 ├── build.gradle.kts
 ├── settings.gradle.kts
 └── gradlew / gradlew.bat
 ```
 
-## Technical profile
+## 技术实现
 
-| Area | Current implementation |
+| 模块 | 实现 |
 | --- | --- |
-| Language | Java |
-| UI | Android XML layouts |
-| Input framework | `InputMethodService` + `KeyboardView` |
-| Storage | App-private `user_dict.txt` |
-| Matching | Case-insensitive `startsWith` on English and Pinyin |
-| Min SDK | API 24 |
-| Target SDK | API 36 |
-| Java compatibility | Java 11 |
+| 应用入口 | `MainActivity` |
+| 输入法服务 | `MyInputMethodService` |
+| 输入法框架 | Android `InputMethodService` |
+| 键盘 | `KeyboardView` + `res/xml/qwerty.xml` |
+| 候选栏 | `HorizontalScrollView` + 动态 `TextView` |
+| 数据存储 | 应用私有文件 `user_dict.txt` |
+| 匹配方式 | English / Pinyin 字段的大小写不敏感前缀匹配 |
+| 最低版本 | API 24 |
+| 目标版本 | API 36 |
+| Java 版本 | Java 11 |
 
-## Current limitations
+## 当前边界
 
-- The dictionary parser treats commas as field separators; entries containing commas are not supported.
-- Matching is prefix-based and currently does not rank, deduplicate, or paginate candidates.
-- The keyboard layout is based on the bundled QWERTY XML definition.
-- Android settings paths differ across manufacturers.
-- The project currently focuses on a compact, deterministic workflow rather than a full predictive IME.
+- 当前词库使用逗号分隔，包含逗号的字段无法表达。
+- 候选词只做前缀匹配，不做词频排序、去重和分页。
+- 键盘使用项目内置的 QWERTY XML 布局。
+- 没有联网同步、账号系统或云端词库。
+- 该项目是轻量级、确定性的个人输入工具，不是完整的智能预测输入法。
 
-## Roadmap ideas
+## 后续方向
 
-- Add candidate ranking and frequency-aware ordering.
-- Support richer dictionary formats such as TSV or JSON.
-- Add dictionary validation and duplicate detection before import.
-- Improve accessibility, theming, and keyboard layout customization.
-- Add automated build checks and instrumentation coverage for import and matching behavior.
+- 增加词频、优先级和候选排序；
+- 支持 TSV / JSON 等更稳健的词库格式；
+- 导入前增加字段校验、重复检测和错误提示；
+- 增加主题、布局和无障碍能力；
+- 增加词库解析与候选匹配的自动化测试。
 
-## Contributing
+## 参与贡献
 
-Issues and focused pull requests are welcome. When proposing a change, please include:
+欢迎提交 Issue 和 Pull Request。涉及词库解析或候选匹配的改动，建议同时提供：
 
-1. The user-facing behavior that changes.
-2. The Android version/device context used for verification.
-3. A minimal dictionary sample when the change affects parsing or matching.
+1. 变更前后的用户行为说明；
+2. 验证使用的 Android 版本或设备信息；
+3. 一份最小可复现词库样例。
 
-## License
+## 许可证
 
-No license file is currently included in the repository. Add or confirm a license before distributing derivative binaries or incorporating the project into another product.
+仓库当前未包含 `LICENSE` 文件。若要发布衍生 APK 或将项目集成到其他产品，请先确认并补充合适的开源许可证。
 
+<details>
+<summary>English summary</summary>
 
+## English summary
+
+**No Memory Required** is a small offline Android input method backed by a user-managed dictionary. `MainActivity` imports, appends, replaces, or clears `user_dict.txt`. `MyInputMethodService` loads that file, matches English or Pinyin prefixes, renders Chinese candidates, and commits the selected candidate through `InputConnection`.
+
+Build with:
+
+```bash
+./gradlew assembleDebug
+```
+
+Dictionary format:
+
+```text
+English,Chinese,Pinyin
+```
+
+The repository includes a visible architecture diagram at [`docs/architecture.svg`](./docs/architecture.svg).
+
+</details>
