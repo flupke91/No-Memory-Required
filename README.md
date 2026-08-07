@@ -11,12 +11,14 @@
 </p>
 
 <p align="center">
-  <a href="#项目简介">项目简介</a> ·
-  <a href="#核心能力">核心能力</a> ·
-  <a href="#架构图">架构图</a> ·
-  <a href="#快速开始">快速开始</a> ·
-  <a href="#词库格式">词库格式</a>
+  <a href="#overview">项目简介</a> &middot;
+  <a href="#features">核心能力</a> &middot;
+  <a href="#architecture">架构图</a> &middot;
+  <a href="#quick-start">快速开始</a> &middot;
+  <a href="#dictionary-format">词库格式</a>
 </p>
+
+<a id="overview"></a>
 
 ## 项目简介
 
@@ -33,6 +35,8 @@
 
 > 导入词库 → 启用输入法 → 输入前缀 → 点击候选词。
 
+<a id="features"></a>
+
 ## 核心能力
 
 - **完全离线**：词库保存在应用私有目录 `user_dict.txt`，候选匹配在本地完成。
@@ -41,6 +45,8 @@
 - **候选栏交互**：匹配结果以可点击的中文候选词展示在键盘顶部。
 - **输入会话自动刷新**：开始新的输入会话时，如果词库文件的修改时间发生变化，服务会自动重新加载词库。
 - **原生实现**：使用 `InputMethodService`、`KeyboardView`、Android XML 布局和标准 `InputConnection` 完成输入链路。
+
+<a id="architecture"></a>
 
 ## 架构图
 
@@ -59,6 +65,8 @@
 5. 用户按下字母键后，字符进入 composing buffer，并通过 `InputConnection` 发送到当前文本框。
 6. 服务使用英文字段和拼音字段进行前缀匹配，将中文字段生成候选项。
 7. 用户点击候选项后，中文文本通过 `commitText` 提交到当前应用。
+
+<a id="quick-start"></a>
 
 ## 快速开始
 
@@ -97,6 +105,9 @@ app/build/outputs/apk/debug/app-debug.apk
 ```
 
 也可以直接使用 Android Studio 打开项目并运行 `app` 配置。
+
+
+<a id="dictionary-format"></a>
 
 ## 启用输入法
 
