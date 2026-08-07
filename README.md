@@ -10,11 +10,24 @@
   <img src="https://img.shields.io/badge/min%20SDK-24-blue?style=flat-square" alt="最低 API 24">
 </p>
 
+<p align="center">
+  <a href="#architecture">架构图</a> &middot;
+  <a href="#scope">功能范围</a> &middot;
+  <a href="#data-contract">数据契约</a> &middot;
+  <a href="#runtime">运行时流程</a> &middot;
+  <a href="#source-layout">源码结构</a>
+</p>
+
+
+<a id="architecture"></a>
+
 ## 架构图
 
 <p align="center">
   <img src="./docs/architecture.svg" alt="No Memory Required 系统架构图" width="100%">
 </p>
+
+<a id="scope"></a>
 
 ## 功能范围
 
@@ -23,6 +36,8 @@
 - 词库保存在应用私有文件 `user_dict.txt` 中，不使用数据库或网络服务。
 - 候选词匹配使用 `英文` 和 `拼音` 字段的大小写不敏感前缀匹配。
 - 候选词点击后通过当前 `InputConnection.commitText()` 提交中文字段。
+
+<a id="data-contract"></a>
 
 ## 数据契约
 
@@ -64,6 +79,8 @@ if (parts.length >= 3) {
 
 导入端会保留包含逗号的行；输入法服务只加载拆分后至少包含三个字段的行。字段内部暂不支持逗号转义、引号包裹或多行文本。
 
+<a id="runtime"></a>
+
 ## 运行时流程
 
 1. `MainActivity` 通过 `ACTION_OPEN_DOCUMENT` 打开系统文档选择器，接收 `text/*` 文件。
@@ -75,6 +92,8 @@ if (parts.length >= 3) {
 7. 候选项点击后调用 `commitText()`，清空 composing 缓冲并移除候选项。
 8. 删除键优先删除 composing 缓冲；缓冲为空时删除当前编辑器前一个字符。
 9. 回车键在存在 composing 内容时提交原始输入，否则向目标编辑器发送 Enter 事件。
+
+<a id="source-layout"></a>
 
 ## 源码结构
 
